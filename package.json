@@ -1,14 +1,15 @@
 {
   "name": "@raymondwang/mock-match-media",
-  "version": "1.0.0",
-  "description": "Test utility to mock `window.matchMedia` for JSDOM environments.",
+  "version": "0.1.0",
+  "description": "Test utility for mocking `window.matchMedia` in JSDOM environments.",
   "author": "Raymond Wang",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "prepublish": "npm run test && npm run build",
+    "lint": "eslint src && prettier --check src",
+    "prepublish": "npm run lint & npm run test & npm run build",
     "test": "jest src"
   },
   "dependencies": {

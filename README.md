@@ -1,3 +1,3 @@
 # mock-match-media
 
-Test utility to mock `window.matchMedia` for JSDOM environments.
+Test utility for mocking `window.matchMedia` in JSDOM environments.

@@ -2,7 +2,8 @@
   "env": {
     "browser": true,
     "es6": true,
-    "jest": true
+    "jest": true,
+    "node": true
   },
   "plugins": ["@typescript-eslint"],
   "extends": ["eslint:recommended", "prettier"],
@@ -12,5 +13,6 @@
     "project": "./tsconfig.json"
   },
   "rules": {},
-  "overrides": [{ "files": "*.ts", "parser": "@typescript-eslint/parser" }]
+  "overrides": [{ "files": "*.ts", "parser": "@typescript-eslint/parser" }],
+  "ignorePatterns": ["dist/"]
 }

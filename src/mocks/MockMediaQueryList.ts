@@ -1,8 +1,11 @@
-import { match } from 'css-mediaquery';
 import { MediaState } from '../MediaState';
 
 interface Listener extends AddEventListenerOptions {
   callback: EventListener;
+}
+
+interface RemoveAllListeners {
+  removeAllListeners: () => void;
 }
 
 /**
@@ -10,7 +13,7 @@ interface Listener extends AddEventListenerOptions {
  * returns. This class is designed to imitate it as closely as possible for use
  * within JSDOM.
  */
-export class MockMediaQueryList implements MediaQueryList {
+export class MockMediaQueryList implements MediaQueryList, RemoveAllListeners {
   #listeners: Listener[] = [];
 
   readonly media: string;
@@ -20,7 +23,7 @@ export class MockMediaQueryList implements MediaQueryList {
   }
 
   get matches(): boolean {
-    return match(this.media, MediaState.values);
+    return MediaState.evaluate(this.media);
   }
 
   /**
@@ -93,5 +96,12 @@ export class MockMediaQueryList implements MediaQueryList {
       if (once) this._removeListener(callback);
     });
     return true;
+  }
+
+  /**
+   * Just to be safe, removes all hanging listeners when resetting mocks.
+   */
+  removeAllListeners() {
+    this.#listeners.forEach(({ callback }) => this._removeListener(callback));
   }
 }

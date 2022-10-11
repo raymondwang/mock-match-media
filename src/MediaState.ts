@@ -1,15 +1,12 @@
 import { match, parse } from 'css-mediaquery';
-import type { MediaValues } from 'css-mediaquery';
-import { MockMediaQueryListEvent } from './mocks';
-
-type MediaFeature = keyof MediaValues | 'type';
-type QueryableMediaValues = Partial<Record<MediaFeature, unknown>>;
+import { MockMediaQueryList, MockMediaQueryListEvent } from './mocks';
+import type { MediaFeature, MediaValues } from './types';
 
 interface MediaQueryObserver {
   features: Set<MediaFeature>;
   matches: boolean;
-  media: MediaQueryList['media'];
-  mediaQueryList: MediaQueryList;
+  media: MockMediaQueryList['media'];
+  mediaQueryList: MockMediaQueryList;
 }
 
 /**
@@ -25,10 +22,13 @@ interface MediaQueryObserver {
  */
 export class MediaState {
   static #observers: MediaQueryObserver[] = [];
-  static #values: QueryableMediaValues = {};
+  static #values: MediaValues = {};
 
-  public static get values() {
-    return this.#values;
+  /**
+   * Given a media query, evaluates whether the current environment matches.
+   */
+  public static evaluate(query: string): boolean {
+    return match(query, this.#values);
   }
 
   /**
@@ -37,7 +37,7 @@ export class MediaState {
    * into the MediaQueryObserver shape in order to easily determine whether it
    * needs to be notified when a media value changes.
    */
-  public static observe = (mediaQueryList: MediaQueryList) => {
+  public static observe = (mediaQueryList: MockMediaQueryList): void => {
     const { matches, media } = mediaQueryList;
     const parsedMediaQuery = parse(media);
     const features = new Set<MediaFeature>();
@@ -64,7 +64,7 @@ export class MediaState {
    * Set media value(s) and notify all observers that are potentially subscribed
    * to changes in queried features.
    */
-  public static setValue = (values: QueryableMediaValues) => {
+  public static setValue = (values: MediaValues): void => {
     const changedFeatures = Object.keys(values) as MediaFeature[];
     if (!changedFeatures.length) {
       return;
@@ -93,8 +93,11 @@ export class MediaState {
   /**
    * Ultimately exported as `mockClear`.
    */
-  public static reset = () => {
-    this.#values = {};
+  public static reset = (): void => {
+    this.#observers.forEach(({ mediaQueryList }) => {
+      mediaQueryList.removeAllListeners();
+    });
     this.#observers = [];
+    this.#values = {};
   };
 }

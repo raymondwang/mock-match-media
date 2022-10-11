@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "lint": "eslint src && prettier --check src",
-    "prepublish": "npm run lint & npm run test & npm run build",
+    "prepublish": "npm run lint && npm run test && npm run build",
     "test": "jest src"
   },
   "dependencies": {
@@ -29,5 +29,13 @@
     "prettier": "2.7.1",
     "ts-jest": "29.0.3",
     "typescript": "4.8.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raymondwang/mock-match-media"
+  },
+  "bugs": {
+    "url": "https://github.com/raymondwang/mock-match-media/issues"
+  },
+  "homepage": "https://github.com/raymondwang/mock-match-media/#readme"
 }

@@ -20,36 +20,19 @@ describe('mockMatchMedia', () => {
     expect(window.matchMedia).toEqual(originalMatchMedia);
   });
 
-  it('should update MediaState values', () => {
-    expect(MediaState.values).toEqual({});
+  it('should reference a globally mocked MediaState', () => {
+    const query = '(monochrome)';
+    expect(MediaState.evaluate(query)).toBe(false);
 
-    matchMedia.mockMediaValue({
-      orientation: 'landscape',
-      width: '800px',
-      height: '600px',
-      'aspect-ratio': '4/3',
-      'prefers-color-scheme': 'dark',
-    });
-    expect(MediaState.values).toEqual({
-      orientation: 'landscape',
-      width: '800px',
-      height: '600px',
-      'aspect-ratio': '4/3',
-      'prefers-color-scheme': 'dark',
-    });
+    matchMedia.mockMediaValue({ monochrome: 1 });
+    expect(MediaState.evaluate(query)).toBe(true);
 
     // Should not unset existing values:
     matchMedia.mockMediaValue({});
-    expect(MediaState.values).toEqual({
-      orientation: 'landscape',
-      width: '800px',
-      height: '600px',
-      'aspect-ratio': '4/3',
-      'prefers-color-scheme': 'dark',
-    });
+    expect(MediaState.evaluate(query)).toBe(true);
 
     matchMedia.mockClear();
-    expect(MediaState.values).toEqual({});
+    expect(MediaState.evaluate(query)).toBe(false);
   });
 
   describe('window.matchMedia', () => {
@@ -62,12 +45,12 @@ describe('mockMatchMedia', () => {
     });
 
     it('should create a MediaQueryList with a single query', () => {
-      const media = '(prefers-color-scheme: dark)';
+      const media = '(prefers-reduced-motion: reduce)';
       const mediaQueryList = window.matchMedia(media);
       expect(mediaQueryList.media).toBe(media);
       expect(mediaQueryList.matches).toBe(false);
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'dark' });
+      matchMedia.mockMediaValue({ 'prefers-reduced-motion': 'reduce' });
       expect(mediaQueryList.matches).toBe(true);
     });
 
@@ -177,7 +160,7 @@ describe('mockMatchMedia', () => {
       expect(mediaQueryList.matches).toBe(true);
       expect(callback).not.toHaveBeenCalled();
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'dark' });
+      matchMedia.mockMediaValue({ 'prefers-reduced-motion': 'reduce' });
       expect(callback).not.toHaveBeenCalled();
     });
 

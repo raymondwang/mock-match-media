@@ -1,6 +1,7 @@
 import { mockMatchMedia } from './mockMatchMedia';
 
-export const matchMedia = mockMatchMedia();
+const { mockMedia, clearMedia, restoreMedia } = mockMatchMedia();
+export { mockMedia, clearMedia, restoreMedia };
 
 /**
  * If we're being run by Jest (https://jestjs.io/docs/environment-variables),
@@ -10,12 +11,12 @@ export const matchMedia = mockMatchMedia();
 if (process.env.JEST_WORKER_ID || process.env.NODE_ENV === 'test') {
   if (typeof afterEach === 'function') {
     afterEach(() => {
-      matchMedia.mockClear();
+      clearMedia();
     });
   }
   if (typeof afterAll === 'function') {
     afterAll(() => {
-      matchMedia.mockRestore();
+      restoreMedia();
     });
   }
 }

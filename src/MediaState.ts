@@ -91,7 +91,7 @@ export class MediaState {
   };
 
   /**
-   * Ultimately exported as `mockClear`.
+   * Ultimately exported as `clearMedia`.
    */
   public static reset = (): void => {
     this.#observers.forEach(({ mediaQueryList }) => {

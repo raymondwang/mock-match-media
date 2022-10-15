@@ -1,4 +1,4 @@
-import { matchMedia } from '../index';
+import { mockMedia } from '../index';
 
 describe('automatic cleanup between tests', () => {
   const callback = jest.fn();
@@ -11,7 +11,7 @@ describe('automatic cleanup between tests', () => {
     const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQueryList.addEventListener('change', callback);
 
-    matchMedia.mockMediaValue({
+    mockMedia({
       width: '1200px',
       height: '800px',
       'prefers-color-scheme': 'dark',
@@ -24,7 +24,7 @@ describe('automatic cleanup between tests', () => {
     const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
     expect(mediaQueryList.matches).toBe(false);
 
-    matchMedia.mockMediaValue({ 'prefers-color-scheme': 'dark' });
+    mockMedia({ 'prefers-color-scheme': 'dark' });
     expect(callback).not.toHaveBeenCalled();
   });
 });

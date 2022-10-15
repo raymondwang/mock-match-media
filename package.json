@@ -1,6 +1,6 @@
 {
   "name": "@raymondwang/mock-match-media",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Test utility for mocking `window.matchMedia` in JSDOM environments.",
   "author": "Raymond Wang",
   "license": "MIT",

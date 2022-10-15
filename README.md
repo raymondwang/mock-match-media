@@ -20,14 +20,14 @@ mocked substitution, with support for:
 ## Usage
 
 ```ts
-import { matchMedia } from '@raymondwang/mock-match-media';
+import { mockMedia } from '@raymondwang/mock-match-media';
 
 it('should alert listeners when the user’s OS enters dark mode', () => {
   const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
   const spy = jest.fn();
   mediaQueryList.addEventListener('change', spy);
   // Mock the media state to indicate that the user prefers dark mode:
-  matchMedia.mockMediaValue({ 'prefers-color-scheme': 'dark' });
+  mockMedia({ 'prefers-color-scheme': 'dark' });
   // Updating the mocked media state should call all listeners with changes:
   expect(spy).toHaveBeenCalledWith(expect.objectContaining({ matches: true }));
 });
@@ -37,29 +37,29 @@ See MDN for more examples on [testing media queries](https://developer.mozilla.o
 
 ## API
 
-This library has one export, `matchMedia`, with three properties:
+This library exports three methods:
 
-### mockMediaValue
+### mockMedia
 
 Sets the value of a media feature in the mocked environment. For example, to
 simulate a device with a width of 1200px and a height of 800px:
 
 ```ts
-matchMedia.mockMediaValue({
+mockMedia({
   width: '1200px',
   height: '800px',
 });
 ```
 
-### mockClear
+### clearMedia
 
 Clears the mocked environment to its default values, without removing the mock.
-Called automatically in each afterEach block.
+In Jest, this is called automatically in each `afterEach` block by default.
 
-### mockRestore
+### restoreMedia
 
-Calls `mockClear` and restores the original value of `window.matchMedia`.
-Called automatically in each afterAll block.
+Calls `clearMedia` and restores the original value of `window.matchMedia`.
+In Jest, this is called automatically in each `afterAll` block by default.
 
 ## Support & caveats
 

@@ -10,13 +10,13 @@ describe('mockMatchMedia', () => {
   });
 
   afterEach(() => {
-    matchMedia.mockRestore();
+    matchMedia.restoreMedia();
   });
 
   it('should overwrite `window.matchMedia` and restore it on cleanup', () => {
     expect(window.matchMedia).not.toEqual(originalMatchMedia);
 
-    matchMedia.mockRestore();
+    matchMedia.restoreMedia();
     expect(window.matchMedia).toEqual(originalMatchMedia);
   });
 
@@ -24,14 +24,14 @@ describe('mockMatchMedia', () => {
     const query = '(monochrome)';
     expect(MediaState.evaluate(query)).toBe(false);
 
-    matchMedia.mockMediaValue({ monochrome: 1 });
+    matchMedia.mockMedia({ monochrome: 1 });
     expect(MediaState.evaluate(query)).toBe(true);
 
     // Should not unset existing values:
-    matchMedia.mockMediaValue({});
+    matchMedia.mockMedia({});
     expect(MediaState.evaluate(query)).toBe(true);
 
-    matchMedia.mockClear();
+    matchMedia.clearMedia();
     expect(MediaState.evaluate(query)).toBe(false);
   });
 
@@ -50,7 +50,7 @@ describe('mockMatchMedia', () => {
       expect(mediaQueryList.media).toBe(media);
       expect(mediaQueryList.matches).toBe(false);
 
-      matchMedia.mockMediaValue({ 'prefers-reduced-motion': 'reduce' });
+      matchMedia.mockMedia({ 'prefers-reduced-motion': 'reduce' });
       expect(mediaQueryList.matches).toBe(true);
     });
 
@@ -60,13 +60,13 @@ describe('mockMatchMedia', () => {
       expect(mediaQueryList.media).toBe(media);
       expect(mediaQueryList.matches).toBe(false);
 
-      matchMedia.mockMediaValue({ width: '800px' });
+      matchMedia.mockMedia({ width: '800px' });
       expect(mediaQueryList.matches).toBe(true);
 
-      matchMedia.mockMediaValue({ width: '1201px' });
+      matchMedia.mockMedia({ width: '1201px' });
       expect(mediaQueryList.matches).toBe(false);
 
-      matchMedia.mockMediaValue({ width: '799px' });
+      matchMedia.mockMedia({ width: '799px' });
       expect(mediaQueryList.matches).toBe(false);
     });
 
@@ -76,10 +76,10 @@ describe('mockMatchMedia', () => {
       const mediaQueryList = window.matchMedia(media);
       expect(mediaQueryList.media).toBe(media);
 
-      matchMedia.mockMediaValue({ width: '400px', height: '900px' });
+      matchMedia.mockMedia({ width: '400px', height: '900px' });
       expect(mediaQueryList.matches).toBe(false);
 
-      matchMedia.mockMediaValue({ orientation: 'landscape' });
+      matchMedia.mockMedia({ orientation: 'landscape' });
       expect(mediaQueryList.matches).toBe(true);
     });
 
@@ -87,10 +87,10 @@ describe('mockMatchMedia', () => {
       const media = 'screen';
       const mediaQueryList = window.matchMedia(media);
 
-      matchMedia.mockMediaValue({ type: 'screen' });
+      matchMedia.mockMedia({ type: 'screen' });
       expect(mediaQueryList.matches).toBe(true);
 
-      matchMedia.mockMediaValue({ type: 'print' });
+      matchMedia.mockMedia({ type: 'print' });
       expect(mediaQueryList.matches).toBe(false);
     });
 
@@ -99,10 +99,10 @@ describe('mockMatchMedia', () => {
       const mediaQueryList = window.matchMedia(media);
       expect(mediaQueryList.matches).toBe(true);
 
-      matchMedia.mockMediaValue({ type: 'screen' });
+      matchMedia.mockMedia({ type: 'screen' });
       expect(mediaQueryList.matches).toBe(true);
 
-      matchMedia.mockMediaValue({ type: 'print' });
+      matchMedia.mockMedia({ type: 'print' });
       expect(mediaQueryList.matches).toBe(true);
     });
 
@@ -111,7 +111,7 @@ describe('mockMatchMedia', () => {
       const mediaQueryList = window.matchMedia(media);
       mediaQueryList.onchange = jest.fn();
 
-      matchMedia.mockMediaValue({ width: '1600px' });
+      matchMedia.mockMedia({ width: '1600px' });
       expect(mediaQueryList.onchange).toHaveBeenCalledWith(
         expect.objectContaining({
           media,
@@ -119,7 +119,7 @@ describe('mockMatchMedia', () => {
         }),
       );
 
-      matchMedia.mockMediaValue({ width: '800px' });
+      matchMedia.mockMedia({ width: '800px' });
       expect(mediaQueryList.onchange).toHaveBeenCalledWith(
         expect.objectContaining({
           media,
@@ -136,19 +136,19 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.addEventListener('change', callback);
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'dark' });
+      matchMedia.mockMedia({ 'prefers-color-scheme': 'dark' });
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({ media, matches: true }),
       );
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'light' });
+      matchMedia.mockMedia({ 'prefers-color-scheme': 'light' });
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({ media, matches: false }),
       );
     });
 
     it('should not dispatch a callback when the value of matches does not change', () => {
-      matchMedia.mockMediaValue({ width: '800px', height: '600px' });
+      matchMedia.mockMedia({ width: '800px', height: '600px' });
       const media = '(max-width: 1200px) and (max-height: 800px)';
       const mediaQueryList = window.matchMedia(media);
       expect(mediaQueryList.matches).toBe(true);
@@ -156,11 +156,11 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.addEventListener('change', callback);
 
-      matchMedia.mockMediaValue({ width: '1000px', height: '700px' });
+      matchMedia.mockMedia({ width: '1000px', height: '700px' });
       expect(mediaQueryList.matches).toBe(true);
       expect(callback).not.toHaveBeenCalled();
 
-      matchMedia.mockMediaValue({ 'prefers-reduced-motion': 'reduce' });
+      matchMedia.mockMedia({ 'prefers-reduced-motion': 'reduce' });
       expect(callback).not.toHaveBeenCalled();
     });
 
@@ -170,13 +170,13 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.addEventListener('change', callback, { once: true });
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'dark' });
+      matchMedia.mockMedia({ 'prefers-color-scheme': 'dark' });
       expect(mediaQueryList.matches).toBe(true);
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({ media, matches: true }),
       );
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'light' });
+      matchMedia.mockMedia({ 'prefers-color-scheme': 'light' });
       expect(mediaQueryList.matches).toBe(false);
       expect(callback).toHaveBeenCalledTimes(1);
     });
@@ -188,10 +188,10 @@ describe('mockMatchMedia', () => {
       mediaQueryList.addEventListener('change', callback);
       mediaQueryList.addEventListener('change', callback);
 
-      matchMedia.mockMediaValue({ orientation: 'landscape' });
+      matchMedia.mockMedia({ orientation: 'landscape' });
       expect(callback).toHaveBeenCalledTimes(1);
 
-      matchMedia.mockMediaValue({ orientation: 'portrait' });
+      matchMedia.mockMedia({ orientation: 'portrait' });
       expect(callback).toHaveBeenCalledTimes(2);
     });
 
@@ -203,7 +203,7 @@ describe('mockMatchMedia', () => {
         mediaQueryList.addEventListener('change', callback);
       });
 
-      matchMedia.mockMediaValue({ type: 'print' });
+      matchMedia.mockMedia({ type: 'print' });
       callbacks.forEach((callback) => {
         expect(callback).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -213,7 +213,7 @@ describe('mockMatchMedia', () => {
         );
       });
 
-      matchMedia.mockMediaValue({ type: 'screen' });
+      matchMedia.mockMedia({ type: 'screen' });
       callbacks.forEach((callback) => {
         expect(callback).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -230,7 +230,7 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryListener.addEventListener('click', callback);
 
-      matchMedia.mockMediaValue({ orientation: 'portrait' });
+      matchMedia.mockMedia({ orientation: 'portrait' });
       expect(mediaQueryListener.matches).toBe(true);
       expect(callback).not.toHaveBeenCalled();
     });
@@ -243,19 +243,19 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.addListener(callback);
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'dark' });
+      matchMedia.mockMedia({ 'prefers-color-scheme': 'dark' });
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({ media, matches: true }),
       );
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'light' });
+      matchMedia.mockMedia({ 'prefers-color-scheme': 'light' });
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({ media, matches: false }),
       );
     });
 
     it('should not dispatch a callback when the value of matches does not change', () => {
-      matchMedia.mockMediaValue({ width: '800px', height: '600px' });
+      matchMedia.mockMedia({ width: '800px', height: '600px' });
       const media = '(max-width: 1200px) and (max-height: 800px)';
       const mediaQueryList = window.matchMedia(media);
       expect(mediaQueryList.matches).toBe(true);
@@ -263,11 +263,11 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.addListener(callback);
 
-      matchMedia.mockMediaValue({ width: '1000px', height: '700px' });
+      matchMedia.mockMedia({ width: '1000px', height: '700px' });
       expect(mediaQueryList.matches).toBe(true);
       expect(callback).not.toHaveBeenCalled();
 
-      matchMedia.mockMediaValue({ 'prefers-color-scheme': 'dark' });
+      matchMedia.mockMedia({ 'prefers-color-scheme': 'dark' });
       expect(callback).not.toHaveBeenCalled();
     });
 
@@ -278,10 +278,10 @@ describe('mockMatchMedia', () => {
       mediaQueryList.addListener(callback);
       mediaQueryList.addListener(callback);
 
-      matchMedia.mockMediaValue({ orientation: 'landscape' });
+      matchMedia.mockMedia({ orientation: 'landscape' });
       expect(callback).toHaveBeenCalledTimes(1);
 
-      matchMedia.mockMediaValue({ orientation: 'portrait' });
+      matchMedia.mockMedia({ orientation: 'portrait' });
       expect(callback).toHaveBeenCalledTimes(2);
     });
 
@@ -293,7 +293,7 @@ describe('mockMatchMedia', () => {
         mediaQueryList.addListener(callback);
       });
 
-      matchMedia.mockMediaValue({ type: 'print' });
+      matchMedia.mockMedia({ type: 'print' });
       callbacks.forEach((callback) => {
         expect(callback).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -303,7 +303,7 @@ describe('mockMatchMedia', () => {
         );
       });
 
-      matchMedia.mockMediaValue({ type: 'screen' });
+      matchMedia.mockMedia({ type: 'screen' });
       callbacks.forEach((callback) => {
         expect(callback).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -322,7 +322,7 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.addEventListener('change', callback);
 
-      matchMedia.mockMediaValue({ 'aspect-ratio': '100/100' });
+      matchMedia.mockMedia({ 'aspect-ratio': '100/100' });
       expect(mediaQueryList.matches).toBe(true);
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -332,7 +332,7 @@ describe('mockMatchMedia', () => {
       );
 
       mediaQueryList.removeEventListener('change', callback);
-      matchMedia.mockMediaValue({ 'aspect-ratio': '9/5' });
+      matchMedia.mockMedia({ 'aspect-ratio': '9/5' });
       expect(mediaQueryList.matches).toBe(false);
       expect(callback).not.toHaveBeenCalledWith(
         expect.objectContaining({
@@ -348,7 +348,7 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.removeEventListener('change', callback);
 
-      matchMedia.mockMediaValue({ width: '900px' });
+      matchMedia.mockMedia({ width: '900px' });
       expect(callback).not.toHaveBeenCalled();
     });
 
@@ -360,7 +360,7 @@ describe('mockMatchMedia', () => {
       mediaQueryList.addEventListener('change', callback2);
       mediaQueryList.removeEventListener('change', callback2);
 
-      matchMedia.mockMediaValue({ height: '400px' });
+      matchMedia.mockMedia({ height: '400px' });
       expect(callback1).toHaveBeenCalledWith(
         expect.objectContaining({
           media,
@@ -377,7 +377,7 @@ describe('mockMatchMedia', () => {
       mediaQueryListener.addEventListener('change', callback);
       mediaQueryListener.removeEventListener('click', callback);
 
-      matchMedia.mockMediaValue({ orientation: 'portrait' });
+      matchMedia.mockMedia({ orientation: 'portrait' });
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
           media,
@@ -394,7 +394,7 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.addListener(callback);
 
-      matchMedia.mockMediaValue({ 'aspect-ratio': '100/100' });
+      matchMedia.mockMedia({ 'aspect-ratio': '100/100' });
       expect(mediaQueryList.matches).toBe(true);
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -404,7 +404,7 @@ describe('mockMatchMedia', () => {
       );
 
       mediaQueryList.removeListener(callback);
-      matchMedia.mockMediaValue({ 'aspect-ratio': '9/5' });
+      matchMedia.mockMedia({ 'aspect-ratio': '9/5' });
       expect(mediaQueryList.matches).toBe(false);
       expect(callback).not.toHaveBeenCalledWith(
         expect.objectContaining({
@@ -420,7 +420,7 @@ describe('mockMatchMedia', () => {
       const callback = jest.fn();
       mediaQueryList.removeListener(callback);
 
-      matchMedia.mockMediaValue({ width: '900px' });
+      matchMedia.mockMedia({ width: '900px' });
       expect(callback).not.toHaveBeenCalled();
     });
 
@@ -432,7 +432,7 @@ describe('mockMatchMedia', () => {
       mediaQueryList.addListener(callback2);
       mediaQueryList.removeListener(callback2);
 
-      matchMedia.mockMediaValue({ height: '400px' });
+      matchMedia.mockMedia({ height: '400px' });
       expect(callback1).toHaveBeenCalledWith(
         expect.objectContaining({
           media,
